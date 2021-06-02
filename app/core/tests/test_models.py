@@ -30,7 +30,7 @@ class CreateUsersModelTests(TestCase):
         self.assertEqual(user.email, email)
         self.assertTrue(user.check_password(password))  # Check if the encrypted password is correct
         self.assertTrue(user.is_superuser)  # Check if user is Super user
-        self.assertTrue(user.is_admin)  # Check if user is Admin
+        self.assertTrue(user.is_staff)  # Check if user is Admin
 
     def test_create_user_email_success_with_upper_email(self):
         """Test the email of a new user is normalized"""
