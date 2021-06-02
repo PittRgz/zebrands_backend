@@ -8,11 +8,12 @@ COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 
 # Directory to store the App sourcecode
-RUN mkdir /zebrands_backend
-WORKDIR /zebrands_backend
-COPY ./zebrands_backend /zebrands_backend
+RUN mkdir /app
+WORKDIR /app
+COPY ./app /app
 
 # Create user to run the app
 # This is for security reasons, so that the container does not run our app with root privilegies
 RUN adduser -D docker_user
+RUN chown docker_user:docker_user -R /app/
 USER docker_user
