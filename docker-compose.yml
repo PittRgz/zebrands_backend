@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  zebrands_backend:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./zebrands_backend:/zebrands_backend
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
