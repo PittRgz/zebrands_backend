@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
@@ -15,6 +17,10 @@ class UserManager(BaseUserManager):
         """
         if not email:
             raise ValueError('User must have an email address')
+
+        # Validating email address
+        if not re.match(r'^(\w|\.|\_|\-)+@zebrands.com$', email.lower()):
+            raise ValueError('Invalid user. Please enter a valid zebrands email')
 
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)  # Encrypt password

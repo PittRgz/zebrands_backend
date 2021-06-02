@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 
-class CreateUsersModelTests(TestCase):
+class UsersModelTests(TestCase):
 
     def test_create_user_success_with_valid_data(self):
         """Test creating a new User returns Success"""
@@ -32,7 +32,7 @@ class CreateUsersModelTests(TestCase):
         self.assertTrue(user.is_superuser)  # Check if user is Super user
         self.assertTrue(user.is_staff)  # Check if user is Admin
 
-    def test_create_user_email_success_with_upper_email(self):
+    def test_create_user_success_with_upper_email(self):
         """Test the email of a new user is normalized"""
         email = 'user@ZEBRANDS.COM'
         password = 'password123'
@@ -44,7 +44,12 @@ class CreateUsersModelTests(TestCase):
 
         self.assertEqual(user.email, email.lower())
 
-    def test_create_user_fails_with_invalid_email(self):
+    def test_create_user_fails_with_no_email(self):
         """Test creating user with invalid error raises error"""
         with self.assertRaises(ValueError):
             get_user_model().objects.create_user(None, 'password123')
+
+    def test_create_user_fails_with_invalid_email(self):
+        """Test creating user with invalid error raises error"""
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user('pedro_rodriguez@another.domain', 'password123')
