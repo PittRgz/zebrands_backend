@@ -10,13 +10,19 @@ from products import serializers
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    """View products in the database"""
+    """
+    list:
+        Returns all ZeBrands Products in the database, ¡No authentication needed!
+    """
     serializer_class = serializers.ProductSerializer
     queryset = Product.objects.all()
 
 
 class ProductView(generics.RetrieveAPIView):
-    """Return single product given an ID, for anonymous users"""
+    """
+    get:
+        Returns a single ZeBrands product given an ID, ¡No authentication needed!
+    """
     serializer_class = serializers.ProductSerializer
     authentication_classes = (TokenAuthentication, )
 
@@ -33,20 +39,35 @@ class ProductView(generics.RetrieveAPIView):
 
 
 class CreateProductView(generics.CreateAPIView):
-    """Create products in the database"""
+    """
+    post:
+        Creates a ZeBrands product, ¡Authentication needed!
+    """
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ProductSerializer
 
 
 class ManageProductView(generics.RetrieveUpdateDestroyAPIView):
-    """Manage product GET, DELETE and UPDATE"""
+    """
+    get:
+        Returns single ZeBrands product given an ID, ¡Authentication needed!
+
+    put:
+        Updates all the information of a ZeBrands product, ¡Authentication needed!
+
+    patch:
+        Partially updates the information of a ZeBrands product, ¡Authentication needed!
+
+    delete:
+        Deletes a ZeBrands product given an ID, ¡Authentication needed!
+    """
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ProductSerializer
 
-    def get_object(self, user_id=None):
-        """ Retrieve and return authenticated user"""
+    def get_object(self):
+        """ Retrieves and return a product, given its ID"""
         product = get_object_or_404(Product, id=self.kwargs['product_id'])
         return product
 
