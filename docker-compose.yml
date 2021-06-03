@@ -10,6 +10,7 @@ services:
       - ./app:/app
     command: >
       sh -c "python manage.py wait_for_db &&
+             python manage.py create_user &&
              python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     environment:
@@ -18,6 +19,9 @@ services:
       - DB_USER=postgres
       - DB_PASS=pgpassword
       - SLACK_WEBHOOK=https://hooks.slack.com/services/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
+      - ADMN_USER=admin@zebrands.com
+      - ADMN_PASS=admin
+      - ADMN_NAME=Default Admin User
     depends_on:
       - db
   db:

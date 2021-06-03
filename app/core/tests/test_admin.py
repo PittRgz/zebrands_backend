@@ -9,7 +9,7 @@ class AdminSiteTests(TestCase):
         """SetUp function for our tests class"""
         self.client = Client()  # Initialize client to make requests
         self.admin_user = get_user_model().objects.create_superuser(
-            email='admin@zebrands.com',
+            email='admin_user@zebrands.com',
             password='pasword123'
         )
         self.client.force_login(self.admin_user)  # Force admin user to login
