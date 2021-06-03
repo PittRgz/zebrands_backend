@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from core.models import Product
+from utils.slack_handler import create_product_update_notification
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -18,4 +19,6 @@ class ProductSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """Update a product and return it"""
         product = super().update(instance, validated_data)
+        # Send a slack notification each time a Product is Updated
+        create_product_update_notification(product)
         return product
