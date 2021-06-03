@@ -16,7 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from rest_framework.schemas import get_schema_view
+
 urlpatterns = [
+    # Adding Schema view with rest_framework
+    path('', get_schema_view(
+        title="Products API",
+        description="This is a basic API to manage products and user admins"
+    ), name='openapi-schema'),
     path('admin/', admin.site.urls),
     path('api/users/', include('user.urls')),
     path('api/products/', include('products.urls')),
