@@ -14,8 +14,13 @@ CREATE_PRODUCT_URL = reverse('products:create')
 
 
 def unique_product_url(product_id):
-    """Return product Update URL"""
+    """Return product manage URL"""
     return reverse('products:product', args=[product_id])
+
+
+def unique_product_anonymous_url(product_id=1):
+    """Return product single view URL"""
+    return reverse('products:product_readonly', args=[product_id])
 
 
 class PublicProductsAPITests(TestCase):
@@ -37,6 +42,21 @@ class PublicProductsAPITests(TestCase):
 
         self.assertEqual(result.status_code, status.HTTP_200_OK)
         self.assertEqual(result.data, serializer.data)
+
+    def test_retrieve_single_product_success(self):
+        """Test that all products are retrieved for anyusers"""
+        # First populate the DB with a dummy product
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+
+        url = unique_product_anonymous_url(product.id)
+        result = self.client.get(url)
+
+        self.assertEqual(result.status_code, status.HTTP_200_OK)
+        self.assertEqual(result.data['sku'], product.sku)
+        self.assertEqual(result.data['name'], product.name)
+        self.assertEqual(result.data['price'], product.price)
+        self.assertEqual(result.data['brand'], product.brand)
+        self.assertEqual(result.data['visits'], product.visits)
 
     def test_create_product_fails_when_unauthorized(self):
         """Test create product when unauthorized user"""
