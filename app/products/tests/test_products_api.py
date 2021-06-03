@@ -76,6 +76,16 @@ class PublicProductsAPITests(TestCase):
 
         self.assertEqual(result.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_delete_product_fails_when_unauthorized(self):
+        """Test edit product with PUT when unauthorized user"""
+        # Create a dummy product
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+
+        url = unique_product_url(product.id)
+        result = self.client.delete(url)
+
+        self.assertEqual(result.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateProductsAPITests(TestCase):
     """Test the private available Products API"""
@@ -211,5 +221,27 @@ class PrivateProductsAPITests(TestCase):
         }
         url = unique_product_url(2)
         response = self.client.put(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_product_success(self):
+        """Test deleting a product"""
+        # Create a dummy product
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+
+        url = unique_product_url(product.id)
+        self.client.delete(url)
+
+        products = Product.objects.all()
+
+        self.assertEqual(len(products), 0)
+
+    def test_delete_product_fails_when_invalid_product_id(self):
+        """Test deleting a product"""
+        # Create a dummy product
+        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+
+        url = unique_product_url(2)
+        response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

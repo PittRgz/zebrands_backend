@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 
 from rest_framework import generics, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -35,3 +36,5 @@ class ManageProductView(generics.RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         user = get_object_or_404(Product, id=self.kwargs['product_id'])
         user.delete()
+
+        return HttpResponse(status=200)
