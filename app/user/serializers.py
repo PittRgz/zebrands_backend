@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _  # For text translation
 
-from rest_framework import serializers, viewsets
+from rest_framework import serializers
 
 
-class UserSerializer(serializers.ModelSerializer, viewsets.ModelViewSet):
+class UserSerializer(serializers.ModelSerializer):
     """Serializer for the users object"""
 
     class Meta:
@@ -26,9 +26,6 @@ class UserSerializer(serializers.ModelSerializer, viewsets.ModelViewSet):
             user.save()
 
         return user
-
-    def destroy(self, request, *args, **kwargs):
-        """Delete a user"""
 
 
 class AuthTokenSerializer(serializers.Serializer):
