@@ -8,8 +8,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'sku', 'name', 'price', 'brand')
-        read_only_fields = ('id',)
+        fields = ('id', 'sku', 'name', 'price', 'brand', 'visits')
+        read_only_fields = ('id', 'visits')
 
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""

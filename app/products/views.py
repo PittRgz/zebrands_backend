@@ -15,6 +15,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
 
 
+class ProductView(generics.RetrieveAPIView):
+    """Create products in the database"""
+    serializer_class = serializers.ProductSerializer
+
+    def get_object(self):
+        product = get_object_or_404(Product, id=self.kwargs['product_id'])
+        return product
+
+
 class CreateProductView(generics.CreateAPIView):
     """Create products in the database"""
     authentication_classes = (TokenAuthentication, )
@@ -30,11 +39,11 @@ class ManageProductView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self, user_id=None):
         """ Retrieve and return authenticated user"""
-        user = get_object_or_404(Product, id=self.kwargs['product_id'])
-        return user
+        product = get_object_or_404(Product, id=self.kwargs['product_id'])
+        return product
 
     def delete(self, request, *args, **kwargs):
-        user = get_object_or_404(Product, id=self.kwargs['product_id'])
-        user.delete()
+        product = get_object_or_404(Product, id=self.kwargs['product_id'])
+        product.delete()
 
         return HttpResponse(status=200)
