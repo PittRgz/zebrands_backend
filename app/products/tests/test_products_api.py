@@ -17,6 +17,7 @@ def unique_product_url(product_id):
     """Return product Update URL"""
     return reverse('products:product', args=[product_id])
 
+
 class PublicProductsAPITests(TestCase):
     """Test the publicly available Products API"""
 
