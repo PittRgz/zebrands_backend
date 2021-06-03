@@ -10,27 +10,45 @@ from user.serializers import UserSerializer, AuthTokenSerializer
 
 
 class CreateUserView(generics.CreateAPIView):
-    """Create a new user in the system"""
+    """
+    post:
+        Creates a ZeBrands user in the system, ¡Authentication needed!
+    """
     serializer_class = UserSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)  # Only authenticated users can Create new Users
 
 
 class CreateTokenView(ObtainAuthToken):
-    """Create a new token for user"""
+    """
+    post:
+        Creates a new Token for a ZeBrands user, ¡Authentication needed!
+    """
     serializer_class = AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
-# class ManageUserView(generics.RetrieveUpdateAPIView):
 class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
-    """Manage user GET, DELETE and UPDATE"""
+
+    """
+    get:
+        Returns single ZeBrands user given an ID, ¡Authentication needed!
+
+    put:
+        Updates all the information of a ZeBrands user, ¡Authentication needed!
+
+    patch:
+        Partially updates the information of a ZeBrands user, ¡Authentication needed!
+
+    delete:
+        Deletes a ZeBrands user given an ID, ¡Authentication needed!
+    """
     serializer_class = UserSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_object(self, user_id=None):
-        """ Retrieve and return authenticated user"""
+    def get_object(self):
+        """ Retrieve and return a user, given its ID"""
         user = get_object_or_404(get_user_model(), id=self.kwargs['user_id'])
         return user
 
