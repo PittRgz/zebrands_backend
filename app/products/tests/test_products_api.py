@@ -5,6 +5,8 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from unittest import mock
+
 from core.models import Product
 
 from products.serializers import ProductSerializer
@@ -170,7 +172,11 @@ class PrivateProductsAPITests(TestCase):
             'brand': 'New Brand',
         }
         url = unique_product_url(product.id)
-        self.client.patch(url, data)
+
+        # Mocking slack notification in order to not depend on a 3rd party API in the tests
+        # and also, to not spamming the slack channel
+        with mock.patch('products.serializers.create_product_update_notification', return_value=True):
+            self.client.patch(url, data)
 
         product.refresh_from_db()  # Refresh the product from the DB
 
@@ -205,7 +211,11 @@ class PrivateProductsAPITests(TestCase):
             'brand': 'New Brand',
         }
         url = unique_product_url(product.id)
-        self.client.put(url, data)
+
+        # Mocking slack notification in order to not depend on a 3rd party API in the tests
+        # and also, to not spamming the slack channel
+        with mock.patch('products.serializers.create_product_update_notification', return_value=True):
+            self.client.put(url, data)
 
         product.refresh_from_db()  # Refresh the product from the DB
 

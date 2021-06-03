@@ -17,6 +17,7 @@ services:
       - DB_NAME=app
       - DB_USER=postgres
       - DB_PASS=pgpassword
+      - SLACK_WEBHOOK=https://hooks.slack.com/services/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
     depends_on:
       - db
   db:
