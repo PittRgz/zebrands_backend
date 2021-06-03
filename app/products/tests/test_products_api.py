@@ -56,7 +56,7 @@ class PublicProductsAPITests(TestCase):
         self.assertEqual(result.data['name'], product.name)
         self.assertEqual(result.data['price'], product.price)
         self.assertEqual(result.data['brand'], product.brand)
-        self.assertEqual(result.data['visits'], product.visits)
+        self.assertEqual(result.data['visits'], product.visits + 1)  # Visits incremented
 
     def test_create_product_fails_when_unauthorized(self):
         """Test create product when unauthorized user"""

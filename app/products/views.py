@@ -16,11 +16,19 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class ProductView(generics.RetrieveAPIView):
-    """Create products in the database"""
+    """Return single product given an ID, for anonymous users"""
     serializer_class = serializers.ProductSerializer
+    authentication_classes = (TokenAuthentication, )
 
     def get_object(self):
         product = get_object_or_404(Product, id=self.kwargs['product_id'])
+
+        # If the user is anonymous, then increment product visits
+        if not self.request.user.is_authenticated:
+            product.visits += 1
+            product.save()
+
+        # product = get_object_or_404(Product, id=self.kwargs['product_id'])
         return product
 
 
