@@ -56,3 +56,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'  # Setting username field as email
+
+
+class Product(models.Model):
+    """Product Model"""
+    sku = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=200)
+    price = models.FloatField(default=0)
+    brand = models.CharField(max_length=200)
+    visits = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
