@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-j#cedux&o3k@)+)%5ceul00d*y9hxa^s7n(4r)hoae@=e38s1n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
     'core',
     'user',
     'products'
@@ -59,7 +60,9 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, "app/templates"),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

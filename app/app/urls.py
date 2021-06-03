@@ -15,15 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
 
 from rest_framework.schemas import get_schema_view
 
 urlpatterns = [
     # Adding Schema view with rest_framework
-    path('', get_schema_view(
-        title="Products API",
+    path('Schema/', get_schema_view(
+        title="ZeBrands Products API",
         description="This is a basic API to manage products and user admins"
     ), name='openapi-schema'),
+    # Adding API endpoints documentation with Swagger
+    path('', TemplateView.as_view(
+        template_name='documentation.html',
+        extra_context={'schema_url': 'openapi-schema'}
+    ), name='swagger-ui'),
     path('admin/', admin.site.urls),
     path('api/users/', include('user.urls')),
     path('api/products/', include('products.urls')),
