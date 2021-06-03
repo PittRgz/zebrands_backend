@@ -22,7 +22,8 @@ from rest_framework.schemas import get_schema_view
 
 SCHEMA_TITLE = _('ZeBrands Products and Users API')
 SCHEMA_DESCRIPTION = _('This is a basic API to manage ZeBrands products and users.<br><br>'
-                       'First you need to create a token for authorization with your email and credentials.<br>'
+                       'First you need to create a token for authorization with your ZeBrands '
+                       'email (user@zebrands.com) and your password.<br>'
                        'Then you need to add that token to the "Authorization" header of your requests in '
                        'the form: Token {valid_token}<br><br>'
                        'Notice that there are some public endpoints that do not need authentication.')
