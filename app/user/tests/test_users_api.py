@@ -7,7 +7,11 @@ from rest_framework import status
 
 CREATE_USER_URL = reverse('user:create')  # User create URL constant
 TOKEN_URL = reverse('user:token')  # User token URL constant
-ME_URL = reverse('user:me')  # My User token URL constant
+
+
+def unique_user_url(user_id=1):
+    """Return product Update URL"""
+    return reverse('user:user', args=[user_id])
 
 
 def create_user(**params):
@@ -38,9 +42,10 @@ class PublicUsersAPITests(TestCase):
 
     def test_retrieve_user_unauthorized(self):
         """Test that authentication is required for users"""
-        result = self.client.get(ME_URL)
+        url = unique_user_url()
+        response = self.client.get(url)
 
-        self.assertEqual(result.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class PrivateUserAPITests(TestCase):
@@ -137,8 +142,9 @@ class PrivateUserAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_profile_success(self):
-        """Test retrieving profile for loged in user"""
-        response = self.client.get(ME_URL)
+        """Test retrieving profile for existent in user"""
+        url = unique_user_url(self.user.id)
+        response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {
@@ -148,21 +154,53 @@ class PrivateUserAPITests(TestCase):
 
     def test_post_not_allowed(self):
         """Test that POST is not allowed on the ME URL (Only PUT)"""
-        response = self.client.post(ME_URL, {})
+        url = unique_user_url()
+        response = self.client.post(url, {})
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_update_user_profile(self):
-        """Test updating the user profile for authenticated user"""
+    def test_partial_update_user_profile(self):
+        """Test updating the user profile with PATCH for authenticated user"""
         data = {
             'name': 'New Name',
             'password': 'newpassword'
         }
 
-        response = self.client.patch(ME_URL, data)
+        url = unique_user_url(self.user.id)
+        response = self.client.patch(url, data)
 
         self.user.refresh_from_db()
 
         self.assertEqual(self.user.name, data['name'])
         self.assertTrue(self.user.check_password(data['password']))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_full_update_user_profile(self):
+        """Test updating the user profile with PUT for authenticated user"""
+        data = {
+            'email': 'new_user@zebrands.com',
+            'name': 'New Name',
+            'password': 'newpassword'
+        }
+
+        url = unique_user_url(self.user.id)
+        response = self.client.put(url, data)
+
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.name, data['name'])
+        self.assertEqual(self.user.email, data['email'])
+        self.assertTrue(self.user.check_password(data['password']))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_full_update_user_profile_fails_with_missing_parameters(self):
+        """Test updating the user profile with PUT for authenticated user"""
+        data = {
+            'name': 'New Name',
+            'password': 'newpassword'
+        }
+
+        url = unique_user_url(self.user.id)
+        response = self.client.put(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
