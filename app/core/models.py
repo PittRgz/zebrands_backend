@@ -57,6 +57,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'  # Setting username field as email
 
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     """Product Model"""
@@ -67,4 +70,4 @@ class Product(models.Model):
     visits = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return self.sku
