@@ -82,6 +82,11 @@ your`request header`when testing `private endpoints`.**
 **NOTE:** Whenever you update a product, you will get a notification as follows in your Slack Channel:
 ![img.png](doc_images/slack_notification.png)
 
+### Running Unit tests
+
+To run the unit tests, execute the following command:  
+`docker-compose run --rm app sh -c "python manage.py test -v 2"`
+
 ## Technical Information
 
 This application was developed from scratch using the following stack:
@@ -94,10 +99,6 @@ This application was developed from scratch using the following stack:
 - **PyTest** for unit testing
 - **GitHub** for version control and development organization (Branches, Pull Requests, etc.)
 - **Slack API** 3rd party API to send the notification when the information of a product is updated
-
-### Running Unit tests
-
--  `docker-compose run --rm app sh -c "python manage.py test"`
 
 ### Execute any command inside the Docker container
 
