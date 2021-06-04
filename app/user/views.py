@@ -28,6 +28,18 @@ class CreateTokenView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
+class UserViewSet(generics.ListAPIView):
+    """
+    get:
+        Returns all ZeBrands users in the database, ¡Authentication needed!
+    """
+    serializer_class = UserSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = get_user_model().objects.all()
+
+
+
 class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
 
     """
