@@ -103,3 +103,15 @@ This application was developed from scratch using the following stack:
 ### Execute any command inside the Docker container
 
 -  `docker-compose run --rm app sh -c "{command}"`
+
+## Architecture of the application
+
+This project was developed with a core database, concentrating all the models and 
+separating them from the different services (In this case `Users` and `Products`).  
+The API is able to comunicate with the different services in the project.
+
+We can scalate this project in the future by adding a model for the ZeBrands brands 
+in the core database and  initializing a new service to manage the ZeBrands brands.
+
+Also, you could make the brand a FK in the `brand` field of the products, so that 
+each product points to a ZeBrand brand.
