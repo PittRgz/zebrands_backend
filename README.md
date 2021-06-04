@@ -79,6 +79,9 @@ You can test the API endpoints with:
 **Just don't forget to add your `authorization token` in 
 your`request header`when testing `private endpoints`.**
 
+**NOTE:** Whenever you update a product, you will get a notification as follows in your Slack Channel:
+![img.png](doc_images/slack_notification.png)
+
 ## Technical Information
 
 This application was developed from scratch using the following stack:
