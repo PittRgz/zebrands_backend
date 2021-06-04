@@ -16,7 +16,8 @@ class CreateUserView(generics.CreateAPIView):
     """
     serializer_class = UserSerializer
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)  # Only authenticated users can Create new Users
+    # Only authenticated users can Create new Users
+    permission_classes = (permissions.IsAuthenticated,)
 
 
 class CreateTokenView(ObtainAuthToken):
@@ -37,7 +38,6 @@ class UserViewSet(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
     queryset = get_user_model().objects.all()
-
 
 
 class ManageUserView(generics.RetrieveUpdateDestroyAPIView):
