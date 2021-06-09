@@ -6,11 +6,15 @@ from utils.slack_handler import create_product_update_notification
 
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer for Product Objects"""
+    # brand_id = serializers.IntegerField(source='brand.id')
+    # brand = serializers.CharField(source='brand.name')
+    # category = serializers.CharField(source='brand.category')
 
     class Meta:
         model = Product
-        fields = ('id', 'sku', 'name', 'price', 'brand', 'visits')
-        read_only_fields = ('id', 'visits')
+        fields = ('id', 'sku', 'name', 'price', 'brand', 'visits', )
+        # fields = ('id', 'sku', 'name', 'price', 'brand_id', 'brand', 'category', 'visits', )
+        read_only_fields = ('id', 'visits', )
 
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""

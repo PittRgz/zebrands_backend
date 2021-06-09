@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 from unittest import mock
 
-from core.models import Product
+from core.models import Brand, Product
 
 from products.serializers import ProductSerializer
 
@@ -30,12 +30,14 @@ class PublicProductsAPITests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        # Create a dummy brand
+        self.brand = Brand.objects.create(name='Brand Test Name', category='Test Category')
 
     def test_retrieve_products_success(self):
         """Test that all products are retrieved for anyusers"""
         # First populate the DB with some dummy products
-        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
-        Product.objects.create(sku='sku_0002', name='Test Name 2', price=20.0, brand='Test Brand 2')
+        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
+        Product.objects.create(sku='sku_0002', name='Test Name 2', price=20.0, brand=self.brand)
 
         result = self.client.get(LIST_PRODUCTS_URL)
 
@@ -48,7 +50,7 @@ class PublicProductsAPITests(TestCase):
     def test_retrieve_single_product_success(self):
         """Test that all products are retrieved for anyusers"""
         # First populate the DB with a dummy product
-        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         url = unique_product_anonymous_url(product.id)
         result = self.client.get(url)
@@ -57,7 +59,7 @@ class PublicProductsAPITests(TestCase):
         self.assertEqual(result.data['sku'], product.sku)
         self.assertEqual(result.data['name'], product.name)
         self.assertEqual(result.data['price'], product.price)
-        self.assertEqual(result.data['brand'], product.brand)
+        self.assertEqual(result.data['brand'], product.brand.id)
         self.assertEqual(result.data['visits'], product.visits + 1)  # Visits incremented
 
     def test_create_product_fails_when_unauthorized(self):
@@ -66,7 +68,7 @@ class PublicProductsAPITests(TestCase):
             'sku': 'sku_0001',
             'name': 'Test Name',
             'price': 10.0,
-            'brand': 'Test Brand',
+            'brand': self.brand.id,
         }
 
         result = self.client.post(CREATE_PRODUCT_URL, data)
@@ -79,7 +81,7 @@ class PublicProductsAPITests(TestCase):
             'sku': 'sku_0001',
             'name': 'Test Name',
             'price': 10.0,
-            'brand': 'Test Brand',
+            'brand': self.brand.id,
         }
 
         result = self.client.patch(CREATE_PRODUCT_URL, data)
@@ -92,7 +94,7 @@ class PublicProductsAPITests(TestCase):
             'sku': 'sku_0001',
             'name': 'Test Name',
             'price': 10.0,
-            'brand': 'Test Brand',
+            'brand': self.brand.id,
         }
 
         result = self.client.put(CREATE_PRODUCT_URL, data)
@@ -102,7 +104,7 @@ class PublicProductsAPITests(TestCase):
     def test_delete_product_fails_when_unauthorized(self):
         """Test edit product with PUT when unauthorized user"""
         # Create a dummy product
-        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         url = unique_product_url(product.id)
         result = self.client.delete(url)
@@ -120,6 +122,8 @@ class PrivateProductsAPITests(TestCase):
         )
         self.client = APIClient()
         self.client.force_authenticate(self.user)
+        # Create a dummy brand
+        self.brand = Brand.objects.create(name='Brand Test Name', category='Test Category')
 
     def test_create_product_success(self):
         """Test that a product is created successfully"""
@@ -127,7 +131,7 @@ class PrivateProductsAPITests(TestCase):
             'sku': 'sku_0001',
             'name': 'Test Name',
             'price': 10.0,
-            'brand': 'Test Brand',
+            'brand': self.brand.id,
         }
 
         self.client.post(CREATE_PRODUCT_URL, data)
@@ -144,11 +148,24 @@ class PrivateProductsAPITests(TestCase):
             'sku': 'sku_0001',
             'name': 'Test Name',
             'price': 10.0,
-            'brand': 'Test Brand',
+            'brand': self.brand.id,
         }
 
         # Create a product with sku = sku_0001
-        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
+
+        response = self.client.post(CREATE_PRODUCT_URL, data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_product_fails_when_brand_does_not_exist(self):
+        """Test that a product is not created if the brand does not exist"""
+        data = {
+            'sku': 'sku_0001',
+            'name': 'Test Name',
+            'price': 10.0,
+            'brand': 2,
+        }
 
         response = self.client.post(CREATE_PRODUCT_URL, data)
 
@@ -165,11 +182,11 @@ class PrivateProductsAPITests(TestCase):
     def test_parcial_update_product_success(self):
         """Test updating a product with PATCH"""
         # Create a dummy product
-        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         data = {
             'name': 'New Name',
-            'brand': 'New Brand',
+            'brand': self.brand.id,
         }
         url = unique_product_url(product.id)
 
@@ -182,12 +199,12 @@ class PrivateProductsAPITests(TestCase):
 
         # Check if name and brand were successfully updated
         self.assertEqual(product.name, data['name'])
-        self.assertEqual(product.brand, data['brand'])
+        self.assertEqual(product.brand.id, data['brand'])
 
     def test_partial_update_product_fails_when_invalid_product_id(self):
         """Test updating a product with PATCH but invalid product_id"""
         # Create a dummy product
-        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         data = {
             'sku': 'new_sku_0001',
@@ -202,13 +219,13 @@ class PrivateProductsAPITests(TestCase):
     def test_full_update_product_success(self):
         """Test updating a product with PUT"""
         # Create a dummy product
-        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         data = {
             'sku': 'new_sku_0001',
             'name': 'New Name',
             'price': 999.0,
-            'brand': 'New Brand',
+            'brand': self.brand.id,
         }
         url = unique_product_url(product.id)
 
@@ -223,17 +240,17 @@ class PrivateProductsAPITests(TestCase):
         self.assertEqual(product.sku, data['sku'])
         self.assertEqual(product.name, data['name'])
         self.assertEqual(product.price, data['price'])
-        self.assertEqual(product.brand, data['brand'])
+        self.assertEqual(product.brand.id, data['brand'])
 
     def test_full_update_product_fails_when_missing_parameters(self):
         """Test updating a product with PUT but missing parameters"""
         # Create a dummy product
-        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         data = {
             'sku': 'new_sku_0001',
             'price': 999.0,
-            'brand': 'New Brand',
+            'brand': self.brand.id,
         }
         url = unique_product_url(product.id)
         response = self.client.put(url, data)
@@ -243,12 +260,12 @@ class PrivateProductsAPITests(TestCase):
     def test_full_update_product_fails_when_invalid_product_id(self):
         """Test updating a product with PUT but invalid product_id"""
         # Create a dummy product
-        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         data = {
             'sku': 'new_sku_0001',
             'price': 999.0,
-            'brand': 'New Brand',
+            'brand': self.brand.id,
         }
         url = unique_product_url(2)
         response = self.client.put(url, data)
@@ -258,7 +275,7 @@ class PrivateProductsAPITests(TestCase):
     def test_delete_product_success(self):
         """Test deleting a product"""
         # Create a dummy product
-        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        product = Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         url = unique_product_url(product.id)
         self.client.delete(url)
@@ -270,7 +287,7 @@ class PrivateProductsAPITests(TestCase):
     def test_delete_product_fails_when_invalid_product_id(self):
         """Test deleting a product"""
         # Create a dummy product
-        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand='Test Brand')
+        Product.objects.create(sku='sku_0001', name='Test Name', price=10.0, brand=self.brand)
 
         url = unique_product_url(2)
         response = self.client.delete(url)

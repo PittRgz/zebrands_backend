@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'core',
     'user',
-    'products'
+    'products',
+    'brands'
 ]
 
 MIDDLEWARE = [

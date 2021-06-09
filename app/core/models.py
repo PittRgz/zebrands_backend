@@ -61,12 +61,22 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.name
 
 
+class Brand(models.Model):
+    """Brand Model"""
+    name = models.CharField(max_length=150, unique=True)
+    category = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     """Product Model"""
     sku = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=200)
     price = models.FloatField(default=0)
-    brand = models.CharField(max_length=200)
+    brand = models.ForeignKey(to=Brand, on_delete=models.CASCADE)
+    # brand = models.CharField(max_length=200)
     visits = models.IntegerField(default=0)
 
     def __str__(self):
